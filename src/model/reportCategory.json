@@ -1,0 +1,57 @@
+{
+  "Fake profile/spam": {
+    "This user send me a suspicious link": null,
+    "This user asked me for money": null,
+    "These photos being someone else": null,
+    "Public figure - profile is fake": null,
+    "This user is advertising": null,
+    "This user isn't responding to me": null,
+    "Other": null
+  },
+  "Inappropriate message": {
+    "This user is being rude/harassing me": null,
+    "This user sent me sexual messages": null,
+    "This user asked for money": null,
+    "This message contains hate speech": null,
+    "This user isn't responding to me": null,
+    "Other": null
+  },
+  "Inappropriate photos": {
+    "This photo contains nudity": null,
+    "This is a fake profile": null,
+    "This user is under 18": null,
+    "This photo is violent": null,
+    "This photo contains private information": null,
+    "I don't like this photo": null,
+    "Other": null
+  },
+  "Inappropriate bio": {
+    "This is spam": null,
+    "This user is selling something": null,
+    "This bio is sexual": null,
+    "This bio contains hate speech": null,
+    "This bio is violent": null,
+    "Other": null
+  },
+  "Underage user": {
+    "This profile says they are under 18": null,
+    "This user looks like they are under 18": null,
+    "This user told me they are under 18": null,
+    "I know this person and they are under 18": null,
+    "Other": null
+  },
+  "Offline behavior": {
+    "I met this person and I'd like to report them": null,
+    "I know this person and I'd like to report them": null,
+    "This user has harassed me on another social platform": null,
+    "Other": null
+  },
+  "Someone is in danger": {
+    "These photos show minors": null,
+    "This user talks about minors": null,
+    "This user mentioned self-harm or suicide": null,
+    "This user is violent": null,
+    "Terrorist content": null,
+    "Other": null
+  }
+}

@@ -1,0 +1,27 @@
+export const initialUserState = {
+  bio: null,
+  education: null,
+  email: null,
+  name: null,
+  gender: null,
+  image: null,
+  password: null,
+  phone: null,
+  preferences: {
+    gender: null,
+    ethnicity: null,
+    program: null,
+    priority: 'Conversation',
+    distance: 90,
+    minAge: 17,
+    maxAge: 70,
+    open: false,
+  },
+  religion: null,
+  school: null,
+  username: null,
+  ethnicity: null,
+  priority: null,
+  token: null,
+  isLoggedIn: false
+};
