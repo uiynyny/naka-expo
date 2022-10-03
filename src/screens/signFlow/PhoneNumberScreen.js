@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 
 import CheckButton from '../../components/CheckButton';
-import { CommonStyles, pickerStyles } from '../../components/styles';
+import { CommonStyles } from '../../components/styles';
 import CountryCode from '../../model/phone_code.json';
 import { SET_PROPERTY } from '../../redux/actionTypes';
 
@@ -18,7 +18,7 @@ const PhoneNumberScreen = ({ navigation }) => {
     const dispatch = useDispatch();
 
     const onPhoneNumberChange = (v) => {
-        v = v.replace(/[^0-9]/g, '');
+        v = v.replace(/\D/g, '');
         setPhoneNumber(v);
     };
     const setCountryCode = (prefix) => {
@@ -35,7 +35,7 @@ const PhoneNumberScreen = ({ navigation }) => {
             Alert.alert('Wrong Input!', 'wrong phone number given', phonePrefix, phoneNumber)
             return;
         }
-        let phone = phonePrefix.substring(1) + phoneNumber;
+        let phone = phonePrefix + phoneNumber;
         dispatch({ type: SET_PROPERTY, payload: { phone: phone }, });
         navigate(nextScreen);
     };
@@ -45,6 +45,7 @@ const PhoneNumberScreen = ({ navigation }) => {
             <Text style={CommonStyles.title}>What's your number?</Text>
             <View style={styles.phoneGroup}>
                 <Picker
+                mode='dialog'
                     selectedValue={phonePrefix}
                     onValueChange={(v) => setCountryCode(v)}
                 >

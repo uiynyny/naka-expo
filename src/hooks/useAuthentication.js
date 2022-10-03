@@ -1,39 +1,44 @@
 import React from 'react';
-import { getAuth, onAuthStateChanged, User, signInWithPhoneNumber, PhoneAuthProvider, RecaptchaVerifier } from 'firebase/auth';
-import { FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha'
-import { useSelector } from 'react-redux';
+import { getAuth, onAuthStateChanged, PhoneAuthProvider, signInWithCredential, signInWithCustomToken } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { LOGIN, LOGOUT } from '../redux/actionTypes';
 
-const auth = getAuth();
-const applicationVerifier = new FirebaseRecaptchaVerifier('naka');
+const auth = getAuth()
+const phoneAuthProvider = new PhoneAuthProvider(auth)
 
 export function useAuthentication() {
-  const [user, setUser] = React.useState();
+  const dispatch = useDispatch()
   const credential = useSelector(s => s.user)
 
   React.useEffect(() => {
     const unsubscribeFromAuthStatuChanged = onAuthStateChanged(auth, (user) => {
+      console.log('auth', user)
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
-        setUser(user);
+        dispatch({ type: LOGIN, payload: { ...user, token } });
       } else {
         // User is signed out
-        setUser(undefined);
+        console.log("logout")
+        dispatch({ type: LOGOUT })
       }
     });
 
     return unsubscribeFromAuthStatuChanged;
   }, []);
 
-  return [user];
+  return [credential];
 }
 
-export async function signInWithPhone(phoneNumber) {
-  auth.settings.appVerificationDisabledForTesting = false;
+export async function signInWithPhone(phoneNumber, recaptcha) {
+  auth.settings.appVerificationDisabledForTesting = true;
   try {
-    
-    return signInWithPhoneNumber(auth, phoneNumber, applicationVerifier);
+    return phoneAuthProvider.verifyPhoneNumber(phoneNumber, recaptcha)
   } catch (err) {
     console.error('signin firebase failed', err);
   }
+}
+
+export async function signInCreds(credential) {
+  return signInWithCredential(auth, credential)
 }

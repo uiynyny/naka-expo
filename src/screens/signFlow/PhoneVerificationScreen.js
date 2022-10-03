@@ -4,22 +4,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell, } from 'react-native-confirmation-code-field';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 
-import CheckButton from '../components/CheckButton';
-import { ACTIVE_CELL_BG_COLOR, CELL_BORDER_RADIUS, CELL_SIZE, CommonStyles, DEFAULT_CELL_BG_COLOR, NOT_EMPTY_CELL_BG_COLOR, VerificationStyles } from '../components/styles';
+import CheckButton from '../../components/CheckButton';
+import { ACTIVE_CELL_BG_COLOR, CELL_BORDER_RADIUS, CELL_SIZE, CommonStyles, DEFAULT_CELL_BG_COLOR, NOT_EMPTY_CELL_BG_COLOR, VerificationStyles } from '../../components/styles';
 
 // import firebaseSvc from '../../services/FirebaseSvc';
 // import { fbLogin, fbLoginEvent } from '../../services/FirebaseAnalytic';
 // import fcmSvc from '../../services/FCMSvc';
 
-import app from '../config/firebase'
-import { loginAction } from '../redux/actions';
-import { LOGIN } from '../redux/actionTypes';
-import { saveAPNToken } from '../actions/token';
-import { authorizeUser, getUserByPhone } from "../actions/user";
-import { signInWithPhone } from '../hooks/useAuthentication';
-import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
+import app from '../../config/firebase'
+import { loginAction } from '../../redux/actions';
+import { LOGIN } from '../../redux/actionTypes';
+import { saveAPNToken } from '../../actions/token';
+import { authorizeUser, getUserByPhone } from "../../actions/user";
+import { signInCreds, signInWithPhone } from '../../hooks/useAuthentication';
+import { PhoneAuthProvider, signInWithCredential, ConfirmationResult, getAuth, signInWithPhoneNumber } from 'firebase/auth';
 
-const logo = require('../assets/images/Logo.png');
+const logo = require('../../assets/images/Logo.png');
 const RESEND_OTP_TIME_LIMIT = 30; // 30 secs
 const nextScreen = 'NickNameScreen';
 
@@ -50,7 +50,7 @@ const PhoneVerificationScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState(null);
     const [value, setValue] = useState('');
-    const [confirmation, setConfirmation] = useState();
+    const [confirmation, setConfirmation] = useState(null);
     const [resendButtonDisabledTime, setResendButtonDisabledTime] = useState(RESEND_OTP_TIME_LIMIT);
     const ref = useBlurOnFulfill({ value: value, cellCount: CELL_COUNT });
     const [codeFieldProps, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -63,14 +63,8 @@ const PhoneVerificationScreen = ({ navigation }) => {
     const title = 'Verification Code';
 
     async function loginWithPhone() {
-        console.log('here')
-        let phoneProvider = new PhoneAuthProvider();
-        phoneProvider.verifyPhoneNumber(phoneNumber, recaptchaVerifier.current).then(setConfirmation)
-    }
-
-    const confirmCode = () => {
-        const cre = PhoneAuthProvider.credential(confirmation,value)
-        signInWithCredential(cre).then(res=>console.log(res))
+        const confirm = await signInWithPhone(user.phone, recaptchaVerifier.current)
+        setConfirmation(confirm)
     }
 
     const signInUser = (user) => {
@@ -83,7 +77,7 @@ const PhoneVerificationScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        getUserByPhone(user.phone).then(userContent => setUserContent(userContent));
+        getUserByPhone(user.phone).then(res => setUserContent(res));
     }, [user])
 
     useEffect(() => {
@@ -121,26 +115,30 @@ const PhoneVerificationScreen = ({ navigation }) => {
     };
 
     const onSubmit = React.useCallback(() => {
-        let mounted = true;
-        if (!validateCode()) {
-            console.log('VerificationScreen : on Submit ' + value);
-            setLoading(true);
-            confirmation.confirm(value).then(res => {
-                if (userContent) {
-                    signInUser(userContent);
-                } else {
-                    navigate(nextScreen);
+        async function helper() {
+            if (!validateCode()) {
+                console.log('VerificationScreen : on Submit ' + value);
+                try {
+                    setLoading(true)
+                    const cred = PhoneAuthProvider.credential(confirmation, value)
+                    await signInCreds(cred)
+                    if (userContent) {
+                        signInUser(userContent);
+                    } else {
+                        navigate(nextScreen);
+                    }
+                } catch (err) {
+                    setErr('incorrect validation\n please try again.');
+                } finally {
+                    if (mounted) {
+                        setLoading(false)
+                        setValue('')
+                    }
                 }
-            }).catch(rej => {
-                console.log(rej);
-                setErr('incorrect validation\n please try again.');
-            }).finally(() => {
-                if (mounted) {
-                    setLoading(false);
-                    setValue('');
-                }
-            });
+            }
         }
+        let mounted = true;
+        helper()
         return () => mounted = false;
     }, [value]);
 
@@ -187,7 +185,7 @@ const PhoneVerificationScreen = ({ navigation }) => {
         );
     };
 
-    
+
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -213,7 +211,7 @@ const PhoneVerificationScreen = ({ navigation }) => {
                     }}
                     keyboardType="number-pad" textContentType="oneTimeCode" renderCell={renderCell} />
                 <View style={CommonStyles.checkButton}>
-                    <CheckButton onPress={() => onSubmit()} disabled={validateCode()} />
+                    <CheckButton onPress={onSubmit} disabled={validateCode()} />
                 </View>
                 <TouchableOpacity disabled={resendButtonDisabledTime > 0} onPress={onResendOtpButtonPress}>
                     <Text style={styles.resend}>

@@ -4,12 +4,6 @@ import { initialUserState } from '../state';
 export const loginReducer = (state = initialUserState, action) => {
   let payload = action.payload;
   switch (action.type) {
-    case t.RETRIEVE_TOKEN:
-      return {
-        ...state,
-        ...payload,
-        isLoggedIn: true,
-      };
     case t.LOGIN:
       return {
         ...state,

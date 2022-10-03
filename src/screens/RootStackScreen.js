@@ -5,7 +5,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from './SplashScreen';
 import LoginScreen from './signFlow/LoginScreen';
 import VerificationScreen from './signFlow/VerificationScreen';
-import PhoneVerificationScreen from './PhoneVerificationScreen';
+import PhoneVerificationScreen from './signFlow/PhoneVerificationScreen';
+import NickNameScreen from './signFlow/NickNameScreen';
 
 
 const RootStack = createStackNavigator();
@@ -16,6 +17,7 @@ const RootStackScreen = () => (
         <RootStack.Screen name="LoginScreen" component={LoginScreen}/>
         <RootStack.Screen name="VerificationScreen" component={VerificationScreen}/>
         <RootStack.Screen name="PhoneVerificationScreen" component={PhoneVerificationScreen}/>
+        <RootStack.Screen name="NickNameScreen" component={NickNameScreen}/>
     </RootStack.Navigator>
 );
 

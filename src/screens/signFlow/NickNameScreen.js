@@ -8,43 +8,33 @@ import { SET_PROPERTY, LOGIN } from '../../redux/actionTypes';
 import { checkUser, createUser } from '../../actions/user';
 import { loginAction } from "../../redux/actions";
 import { saveAPNToken } from "../../actions/token";
-import fcmSvc from "../../services/FCMSvc";
+// import fcmSvc from "../../services/FCMSvc";
 
 const title = 'Username';
 
-const NickNameScreen = (props) => {
-    const { navigate } = props.navigation;
-
+const NickNameScreen = () => {
     const dispatch = useDispatch();
     const n = useSelector(s => s.user);
-    const [name, setName] = useState(n.username ? n.username : '');
     const [err, setErr] = useState(null);
-    const validateNameLocal = () => !/\s/.test(name) && name.length >= 5 && name.length <= 15;
+    const validateNameLocal = () => !/\s/.test(n.username) && n.username?.length && n.username.length >= 5 && n.username.length <= 15;
     const onSubmit = async () => {
-        let ret = await checkUser('username', name);
+        let ret = await checkUser('username', n.username);
         if (ret) {
             setErr('username already taken');
             return;
         }
         setErr(null);
-        dispatch({
-            type: SET_PROPERTY,
-            payload: { username: name },
-        });
-        n.username = name;
-        console.log(n);
         createUser(n)
             .then((res) => {
                 if (res.ok) {
                     let token = loginAction(n);
                     dispatch({ type: LOGIN, payload: { token: token } })
-                    fcmSvc.getFcmToken().then(t => saveAPNToken(user.username, t))
+                    // fcmSvc.getFcmToken().then(t => saveAPNToken(user.username, t))
                 } else {
                     throw res.json();
                 }
             })
             .catch((rej) => {
-                console.log(rej)
                 alert('registration failed, please check other fields');
             });
     };
@@ -57,9 +47,9 @@ const NickNameScreen = (props) => {
                     <TextInput
                         style={CommonStyles.Input}
                         placeholder="put it here!"
-                        value={name}
+                        value={n.username}
                         maxLength={15}
-                        onChangeText={v => setName(v)}
+                        onChangeText={(name)=>dispatch({type: SET_PROPERTY,payload: { username: name }})}
                     />
                 </View>
                 <View style={CommonStyles.checkButton}>

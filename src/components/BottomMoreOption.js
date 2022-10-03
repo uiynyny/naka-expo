@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { deleteContent } from "../actions/content"
 import { createReport } from '../actions/support'
-import { create } from "react-test-renderer";
 
 export const ExtraOptions = ({ visible, setVisible, username, postId }) => {
 
