@@ -1,31 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, SafeAreaView, ActivityIndicator } from 'react-native';
-import { launchImageLibrary } from "react-native-image-picker";
+import * as ImagePicker from 'expo-image-picker';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Geolocation from 'expo-location';
+import { useForegroundPermissions } from 'expo-location';
 import { createContent, uploadImage } from '../../actions/content';
+import { useCurrentPosition } from '../../hooks/useCurrentPosition';
 
 
-const PostScreen = ({navigation}) => {
+const PostScreen = ({ navigation }) => {
     const user = useSelector(s => s.user);
     const [content, setContent] = useState("");
     const [images, setImages] = useState([0]);
-    const [location, setLocation] = useState();
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        (async()=>{
-            let { status } = await Geolocation.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-            let location = await Geolocation.getCurrentPositionAsync({})
-            setLocation(location.coords)
-        })()
-    })
-
+    const [location] = useCurrentPosition();
+    const [status] = useForegroundPermissions();
     const onClose = () => navigation.goBack()
 
     const uploadAndGetImageUrls = async () => {
@@ -46,7 +35,6 @@ const PostScreen = ({navigation}) => {
             "timestamp": new Date().toISOString(),
             "location": [location.longitude, location.latitude]
         }
-        console.log(payload)
         setLoading(false);
         createContent(payload).then(e => e.json())
         navigation.goBack();
@@ -54,22 +42,21 @@ const PostScreen = ({navigation}) => {
         setImages([0]);
     }
 
-    const addImage = () => {
-        launchImageLibrary({
-            mediaType: 'photo',
-            quality: 0.1,
-            maxHeight: 400,
-            maxWidth: 400,
-        }, res => {
-            if (res && res.assets) {
-                res.assets.forEach((v) => {
-                    v.path = v.uri.slice(8)
-                    v.filename = v.fileName
-                    v.mime = v.type
-                    setImages(pre => ([...pre, v]))
-                })
-            }
+    const addImage = async () => {
+        let res = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0.2,
+            selectionLimit: 9,
+            allowsMultipleSelection: true,
         })
+        if (!res.cancelled) {
+            res.selected.forEach((v) => {
+                v.path = v.uri
+                v.filename = v.fileName
+                v.mime = v.type
+                setImages(pre => ([...pre, v]))
+            })
+        }
     }
 
     const deleteImage = async (index) => {
@@ -123,14 +110,15 @@ const PostScreen = ({navigation}) => {
                         justifyContent: 'center',
                         alignItems: 'center'
                     }}
-                        onPress={addImage}
-                    ><Icon name='image-outline' size={30} /></TouchableOpacity>
+                        onPress={addImage}>
+                        <Icon name='image-outline' size={30} />
+                    </TouchableOpacity>
                 }
                 return (
                     <View>
                         <View>
                             <Image
-                                source={{ uri: item }}
+                                source={{ uri: item.uri }}
                                 resizeMode="contain"
                                 style={{
                                     width: 120,

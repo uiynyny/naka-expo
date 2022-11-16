@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
                     "color": "#e9e9e9"
                 },
                 {
-                                    "lightness": 17
+                    "lightness": 17
                 }
             ]
         }

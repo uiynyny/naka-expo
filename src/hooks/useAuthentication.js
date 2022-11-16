@@ -7,25 +7,25 @@ const auth = getAuth()
 const phoneAuthProvider = new PhoneAuthProvider(auth)
 
 export function useAuthentication() {
-  const dispatch = useDispatch()
+//  const dispatch = useDispatch()
   const credential = useSelector(s => s.user)
 
-  React.useEffect(() => {
-    const unsubscribeFromAuthStatuChanged = onAuthStateChanged(auth, (user) => {
-      console.log('auth', user)
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        dispatch({ type: LOGIN, payload: { ...user, token } });
-      } else {
-        // User is signed out
-        console.log("logout")
-        dispatch({ type: LOGOUT })
-      }
-    });
-
-    return unsubscribeFromAuthStatuChanged;
-  }, []);
+//  React.useEffect(() => {
+//    const unsubscribeFromAuthStatuChanged = onAuthStateChanged(auth, (user) => {
+//      console.log('auth', user)
+//      if (user) {
+//        // User is signed in, see docs for a list of available properties
+//        // https://firebase.google.com/docs/reference/js/firebase.User
+//        dispatch({ type: LOGIN, payload: { ...user, token } });
+//      } else {
+//        // User is signed out
+//        console.log("logout")
+//        dispatch({ type: LOGOUT })
+//      }
+//    });
+//
+//    return unsubscribeFromAuthStatuChanged;
+//  }, []);
 
   return [credential];
 }
