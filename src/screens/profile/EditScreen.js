@@ -11,6 +11,7 @@ import { bottomSheetStyles } from '../../components/styles';
 import { updateImage } from '../../actions/image';
 import { renderHeader } from '../../components/CustomBottomSheet';
 import { uploadImage } from '../../actions/content';
+import { useForegroundPermissions } from 'expo-location';
 
 const imageHolder = require('../../assets/images/image_ONBt.png');
 
@@ -53,6 +54,7 @@ const EditScreen = (props) => {
 
     const bs = useRef(null);
     const fall = useRef(new Animated.Value(1));
+    const [status, requestPermission] = ImagePicker.useCameraPermissions({request:true});
 
     let userInfo = [
         user.bio,
@@ -70,17 +72,17 @@ const EditScreen = (props) => {
 
     const takePhotoFromCamera = async () => {
         let pickerResult = await ImagePicker.launchCameraAsync({
-            mediaTypes:ImagePicker.MediaTypeOptions.All,
-            allowsEditing:true,
-            quality:0.5,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            quality: 0.5,
         });
         resolve(pickerResult);
     };
 
     const choosePhotoFromLibrary = async () => {
         let pickerResult = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes:ImagePicker.MediaTypeOptions.All,
-            allowsEditing:true,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
             quality: 0.5,
         });
         resolve(pickerResult);

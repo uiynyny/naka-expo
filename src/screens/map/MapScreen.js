@@ -37,8 +37,9 @@ const MapScreen = (props) => {
     const dispatch = useDispatch();
     const user = useSelector(s => s.user);
     const mapRef = useRef();
+    const [status] = Location.useForegroundPermissions()
 
-    let foregroundSubscription = null
+    const toggleModal = () => setShowModal(!showmodal);
 
     //calculate distance between post and user
     const isDisable = useCallback((marker) => {
@@ -48,36 +49,27 @@ const MapScreen = (props) => {
         });
         return dist > radius;
     }, [userLocation]);
-    const toggleModal = () => setShowModal(!showmodal);
 
-    const goToInitialRegion = () => {
-        mapRef.current.animateToRegion(userLocation, 1000);
-    }
-
-    const stopForegroundUpdate = () => {
-        foregroundSubscription?.remove()
-        setPosition(null)
-    }
-
-    const getUserLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            console.warn('Permission to access location was denied');
-            return;
-        }
-        foregroundSubscription?.remove()
-        foregroundSubscription = await Location.watchPositionAsync({}, (position) => {
-            setUserLocation({
-                ...position.coords,
-                latitudeDelta: LATITUD_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
-            })
-        })
-    }
 
     // watch user location
     useEffect(() => {
+        let foregroundSubscription = null
+        const getUserLocation = async () => {
+            if (!status.granted) {
+                console.warn('Permission to access location was denied');
+                return;
+            }
+
+            foregroundSubscription = await Location.watchPositionAsync({}, (position) => {
+                setUserLocation({
+                    ...position.coords,
+                    latitudeDelta: LATITUD_DELTA,
+                    longitudeDelta: LONGITUDE_DELTA
+                })
+            })
+        }
         getUserLocation()
+        return () => foregroundSubscription
     }, []);
 
     //get content from server when user change location
@@ -134,7 +126,7 @@ const MapScreen = (props) => {
         toggleModal();
     }
 
-    return (userLocation === undefined ? <></> :
+    return (!userLocation ? <></> :
         <View style={styles.container}>
             <MapView
                 customMapStyle={styles.mapStyle}
@@ -144,7 +136,6 @@ const MapScreen = (props) => {
                 maxZoomLevel={18}
                 minZoomLevel={10}
                 initialRegion={userLocation}
-                onMapReady={goToInitialRegion}
                 preserveClusterPressBehavior
                 onRegionChange={(region, details) => {
                     setUserLocation(prevState => ({

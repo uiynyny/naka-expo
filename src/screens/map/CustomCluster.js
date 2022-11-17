@@ -5,9 +5,10 @@ import IndPin from "../../components/IndPin";
 export const CustomCluster = (props) => {
     const coord = props.geometry.coordinates
     const disabled = props.disabled
+    
     return (
         <Marker
-            key={`${props.geometry.coordinates[0]}_${props.geometry.coordinates[1]}`}
+            key={`${props.geometry.coordinates[0]}_${props.geometry.coordinates[1]}+${Math.random()}`}
             coordinate={{ longitude: coord[0], latitude: coord[1] }}
             onPress={props.onPress}
         >

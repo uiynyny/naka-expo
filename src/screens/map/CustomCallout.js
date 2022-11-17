@@ -16,7 +16,7 @@ const CustomCallout = (props) => {
   const [liked, setLiked] = useState(false);
   const [showmodal, setShowModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [postUser,setPostUser] = useState(null);
+  const [postUser, setPostUser] = useState(null);
 
   const onCommentClick = (index) => {
     setShowModal(!showmodal);
@@ -26,7 +26,7 @@ const CustomCallout = (props) => {
   const toggleModal = () => setShowModal(!showmodal)
   const toggleOption = () => setShowOptions(!showOptions)
 
-  const onSharePress = ({username,id}) => {
+  const onSharePress = ({ username, id }) => {
     toggleOption();
     setPostUser(username)
     setPostId(id);
@@ -40,7 +40,7 @@ const CustomCallout = (props) => {
   return (<View style={styles.page}>
     <ScrollView contentContainerStyle={styles.Modal} style={{ borderRadius: 20 }}>
       {contents.map((value, index) => (
-        <View key={index} style={{ flex: 1, justifyContent: 'center', borderRadius: 18 }}>
+        <View key={value._id.$oid} style={{ flex: 1, justifyContent: 'center', borderRadius: 18 }}>
           {value.imageUrls.length > 0 ?
             <Image source={{ uri: value.imageUrls[0] }} style={styles.image} /> :
             <ImageBackground source={{}} style={styles.image}>
@@ -62,7 +62,7 @@ const CustomCallout = (props) => {
               onPress={() => onAvatarPress(value)}>
               <View style={styles.imgCropper}>
                 <Image source={userImg[value.username] ? { uri: userImg[value.username] } : imageHolder}
-                    style={styles.avatar}/>
+                  style={styles.avatar} />
               </View>
               <Text style={{ flex: 3, margin: 5 }}>{value.username}</Text>
             </TouchableOpacity>
@@ -79,7 +79,7 @@ const CustomCallout = (props) => {
               <TouchableOpacity onPress={() => onCommentClick(value._id.$oid)} style={{ margin: 2 }}>
                 <Icon name="chatbubble-outline" size={18} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ margin: 3 }} onPress={() => onSharePress({"username":value.username,"id":value._id.$oid})}>
+              <TouchableOpacity style={{ margin: 3 }} onPress={() => onSharePress({ "username": value.username, "id": value._id.$oid })}>
                 <Icon name="arrow-redo-outline" size={18} />
               </TouchableOpacity>
             </View>
@@ -94,7 +94,7 @@ const CustomCallout = (props) => {
         <Modal isVisible={showmodal} onBackdropPress={toggleModal}>
           <CommentScreen postId={postId} onAvatarPress={onAvatarPress} />
         </Modal>
-        <ExtraOptions visible={showOptions} setVisible={setShowOptions} username={postUser} postId={postId}/>
+        <ExtraOptions visible={showOptions} setVisible={setShowOptions} username={postUser} postId={postId} />
       </View>
     </ScrollView>
   </View>);
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 50,
   },
-  imgCropper:{
+  imgCropper: {
     margin: 2,
     marginLeft: 10,
     borderRadius: 50,

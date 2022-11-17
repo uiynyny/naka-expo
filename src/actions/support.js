@@ -15,5 +15,5 @@ export const createSupportRequest = (payload) => {
 
 
 export async function createReport(id, username, report) {
-  console.log(id,username,report)
+  console.log(id, username, report)
 }

@@ -6,6 +6,12 @@ export const ContentReducer = (state = {}, action) => {
                 ...state,
                 [payload.username]: payload.content
             }
+        case 'ADD_CONTENT':
+            newpay=state[payload.username]+payload.content
+            return {
+                ...state,
+                [payload.username]:newpay
+            }
         default:
             return state
     }

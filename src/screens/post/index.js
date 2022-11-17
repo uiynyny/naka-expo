@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, S
 import * as ImagePicker from 'expo-image-picker';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useForegroundPermissions } from 'expo-location';
+import { requestForegroundPermissionsAsync, useForegroundPermissions } from 'expo-location';
 import { createContent, uploadImage } from '../../actions/content';
 import { useCurrentPosition } from '../../hooks/useCurrentPosition';
 
@@ -36,13 +36,19 @@ const PostScreen = ({ navigation }) => {
             "location": [location.longitude, location.latitude]
         }
         setLoading(false);
-        createContent(payload).then(e => e.json())
+        createContent(payload)
         navigation.goBack();
         setContent('');
         setImages([0]);
     }
 
     const addImage = async () => {
+        console.log(status)
+        if (!status.granted) {
+            let res = await requestForegroundPermissionsAsync()
+            console.log(res);
+            return
+        }
         let res = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 0.2,

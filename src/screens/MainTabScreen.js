@@ -21,7 +21,7 @@ const MainTabScreen = () => {
     return (
         <Tab.Navigator
             screenOptions={{ tabBarActiveTintColor: '#144D7F', tabBarInactiveTintColor: 'gray', headerShown: false }}>
-            {/* <Tab.Screen
+            <Tab.Screen
                 name={'Map'}
                 component={MapStackScreen}
                 options={{
@@ -31,7 +31,7 @@ const MainTabScreen = () => {
                             <Icon name="map-outline" size={30} color={color}/>
                         </View>)
                 }}
-            /> */}
+            />
             <Tab.Screen
                 name='Notification'
                 component={NotificationTab}
