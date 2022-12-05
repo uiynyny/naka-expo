@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "version": ">= 2.8.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {
+      "ios":{
+        "appleId":"dexter_zhang@live.com",
+        "ascAppId":"1545501390",
+        "appleTeamId":"A5CVAU6W7Y"
+      }
+    }
+  }
+}
